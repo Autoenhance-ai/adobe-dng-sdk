@@ -45,6 +45,13 @@ find_library(DL_LIBRARY dl)
 # Specify the directory containing the .ar file
 link_directories(${XMP_LIB})
 
+add_library(staticXMPCore STATIC IMPORTED)
+add_library(staticXMPFiles STATIC IMPORTED)
+
+set_target_properties(staticXMPCore PROPERTIES IMPORTED_LOCATION ${XMP_LIB}/staticXMPCore.ar)
+set_target_properties(staticXMPFiles PROPERTIES IMPORTED_LOCATION ${XMP_LIB}/staticXMPFiles.ar)
+
+
 target_link_libraries(
     dng_validate 
     dng_sdk
