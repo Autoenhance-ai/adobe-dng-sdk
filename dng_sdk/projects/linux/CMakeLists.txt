@@ -13,9 +13,13 @@ set(SRC_DIR ../../source)
 # Get the source files
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 
-# Set the XMP SDK build directory if we don't want to install it system-wide
+# Set location of the XMP toolkit and it's libraries
 if(NOT DEFINED XMP_DIR)
     set(XMP_DIR ../../../xmp/toolkit/)
+endif()
+
+if(NOT DEFINED XMP_LIB)
+    set(XMP_LIB ${XMP_DIR}/public/libraries/i80386linux/)
 endif()
 
 # Set the archive flags
@@ -38,7 +42,13 @@ find_library(ZLIB_LIBRARY z)
 find_library(PTHREAD_LIBRARY pthread)
 find_library(DL_LIBRARY dl)
 
-target_link_libraries(dng_validate dng_sdk ${LIBRARIES})
+target_link_libraries(
+    dng_validate 
+    dng_sdk
+    ${LIBRARIES}
+    ${XMP_LIB}/staticXMPCore.ar
+    ${XMP_LIB}/staticXMPFiles.ar
+)
 
 # Set the clean target
 add_custom_target(clean-all
@@ -63,24 +73,9 @@ target_compile_definitions(dng_validate PRIVATE -DqDNGValidateTarget)
 #
 target_compile_definitions(dng_sdk PRIVATE -DAdobePrivate=1)
 
-
-# # Specify we want the DOM model to be compiled
-# #
-# target_compile_definitions(dng_sdk PRIVATE -DENABLE_CPP_DOM_MODEL=1)
-
 # Specify we are compiling for Linux
 #
 target_compile_definitions(dng_sdk PRIVATE -DqLinux)
 target_compile_definitions(dng_sdk PRIVATE -DUNIX_ENV=1)
 target_compile_definitions(dng_validate PRIVATE -DqLinux)
 target_compile_definitions(dng_validate PRIVATE -DUNIX_ENV=1)
-
-
-
-# "'XML_STATIC=1'",
-# "'HAVE_EXPAT_CONFIG_H=1'",
-# "'XMP_StaticBuild=1'",
-# "'XMP_64=1'",
-# "'BUILDING_XMPCORE_LIB=1'",
-# "'XMP_COMPONENT_INT_NAMESPACE=AdobeXMPCore_Int'",
-# "'BUILDING_XMPCORE_AS_STATIC=1'",
