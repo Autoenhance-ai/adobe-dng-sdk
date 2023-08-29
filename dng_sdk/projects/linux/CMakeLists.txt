@@ -42,12 +42,15 @@ find_library(ZLIB_LIBRARY z)
 find_library(PTHREAD_LIBRARY pthread)
 find_library(DL_LIBRARY dl)
 
+# Specify the directory containing the .ar file
+link_directories(${XMP_LIB})
+
 target_link_libraries(
     dng_validate 
     dng_sdk
     ${LIBRARIES}
-    ${XMP_LIB}/staticXMPCore.ar
-    ${XMP_LIB}/staticXMPFiles.ar
+    staticXMPCore
+    staticXMPFiles
 )
 
 # Set the clean target
