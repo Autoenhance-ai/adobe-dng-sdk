@@ -1,3 +1,8 @@
+# This CMake file is based on the Makefile in https://github.com/yanburman/dng_sdk
+# which originally was targeting the 1.5 version of the Adobe DNG SDK.
+# 
+# We have ported this to Cmake and updated it to build the 1.6 version of the SDK.
+#
 cmake_minimum_required(VERSION 3.0)
 
 project(dng_validate)
@@ -9,11 +14,7 @@ set(SRC_DIR ../../source)
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 
 # Set the XMP SDK build directory if we don't want to install it system-wide
-set(XMP_PUB_DIR ../../../xmp_sdk/public)
-set(XMP_RELEASE ${XMP_PUB_DIR}/libraries/i80386linux_x64/release/)
-
-# Set the compiler flags
-include_directories(${XMP_PUB_DIR}/include ${SRC_DIR})
+set(XMP_DIR ../../../xmp/toolkit/)
 
 # Set the archive flags
 set(ARFLAGS crus)
@@ -44,14 +45,40 @@ add_custom_target(clean-all
 )
 
 #
-# Compiler definitions.
+# Compiler flags.
 #
+
+# Specify where to find the headers
+#
+target_include_directories(dng_validate PRIVATE ${XMP_DIR}/public/include/)
+target_include_directories(dng_sdk PRIVATE ${XMP_DIR}/public/include/)
 
 # Enable compiling of the dng_validate target
 #
 target_compile_definitions(dng_validate PRIVATE -DqDNGValidateTarget)
 
+# Specify we want the internal Adobe methods to be compiled
+#
+target_compile_definitions(dng_sdk PRIVATE -DAdobePrivate=1)
+
+
+# # Specify we want the DOM model to be compiled
+# #
+# target_compile_definitions(dng_sdk PRIVATE -DENABLE_CPP_DOM_MODEL=1)
+
 # Specify we are compiling for Linux
 #
 target_compile_definitions(dng_sdk PRIVATE -DqLinux)
+target_compile_definitions(dng_sdk PRIVATE -DUNIX_ENV=1)
 target_compile_definitions(dng_validate PRIVATE -DqLinux)
+target_compile_definitions(dng_validate PRIVATE -DUNIX_ENV=1)
+
+
+
+# "'XML_STATIC=1'",
+# "'HAVE_EXPAT_CONFIG_H=1'",
+# "'XMP_StaticBuild=1'",
+# "'XMP_64=1'",
+# "'BUILDING_XMPCORE_LIB=1'",
+# "'XMP_COMPONENT_INT_NAMESPACE=AdobeXMPCore_Int'",
+# "'BUILDING_XMPCORE_AS_STATIC=1'",
