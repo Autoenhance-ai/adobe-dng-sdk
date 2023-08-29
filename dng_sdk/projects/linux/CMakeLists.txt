@@ -14,7 +14,9 @@ set(SRC_DIR ../../source)
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 
 # Set the XMP SDK build directory if we don't want to install it system-wide
-set(XMP_DIR ../../../xmp/toolkit/)
+if(NOT DEFINED XMP_DIR)
+    set(XMP_DIR ../../../xmp/toolkit/)
+endif()
 
 # Set the archive flags
 set(ARFLAGS crus)
