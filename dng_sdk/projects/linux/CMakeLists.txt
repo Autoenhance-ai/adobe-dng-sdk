@@ -13,30 +13,19 @@ message("==================================================================")
 message("dng")
 message("==================================================================")
 
-# Set if we want to build the DNG SDK with XMP Metadata support, by default this is
-# off because there are issues with the XMP libraries not building correctly due to 
-# missing symboles and for most use cases this is not required in order to decode DNG
-# files
-#
-# In addition it's still possible to read and write XMP through the use of other tools
-# such as exiftool if required.
-#
-set(USE_XMP OFF)
-message("USE_XMP: ${USE_XMP}")
+message("XMP_ROOT: ${XMP_ROOT}")
 
-# XMP Toolkit
+# We need a reference to where the libries are located as the XMP toolkit
+# outputs .ar files and we need to link to them when building the DNG SDK
+# since cmake defaults to trying to link to the .a files.
 #
-if (USE_XMP)
-  message("Building with XMP support")
-else()
-  message("Building without XMP support")
-endif()
+set(XMP_LIB_DIR ${XMP_ROOT}/public/libraries/i80386linux/release/)
+message("XMP_LIB_DIR: ${XMP_LIB_DIR}")
 
-# We need to build  libraries by default. Currently static libraries don't build
-# as cmake tries to link using the standard .a extension but the XMP script moves
-# them to an .ar extension which breaks the linking. 
+# We need to build the XMP Toolkit statically as the DNG SDK requires methods
+# from the library which are only built for the static version of the library. 
 #
-set(XMP_BUILD_STATIC OFF)
+set(XMP_BUILD_STATIC On)
 message("XMP_BUILD_STATIC: ${XMP_BUILD_STATIC}")
 
 # Keep track of the name of the target for the XMP libraries which changes
@@ -56,20 +45,32 @@ endif()
 #
 add_subdirectory(${XMP_ROOT}/build/ ${BUILD_DIR}/xmp)
 
+# Keep a reference to the XMP libraries we need to link to
+#
+if(NOT XMP_BUILD_STATIC)
+  set(
+    XMP_LIBRARIES
+    ${XMP_CORE_TARGET}
+    ${XMP_FILES_TARGET}
+  )
+else()
+  set(
+    XMP_LIBRARIES
+    ${XMP_LIB_DIR}/staticXMPFiles.ar
+    ${XMP_LIB_DIR}/staticXMPCore.ar
+  )
+endif()
+
 # zlib
 #
-# We compile zlib separately as the DNG SDK uses it and we need to ensure it's
-# available even if we don't compile the XMP libraries.
+# We compile zlib separately as the DNG SDK uses it and unfortunately the XMP toolkit
+# doesn't export xlib symbols so we can't use the one built by the XMP toolkit.
 #
 add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
 
 # Setup DNG SDK
 # 
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
-
-if(NOT USE_XMP)
-  list(FILTER LIB_CPP_FILES EXCLUDE REGEX ${SRC_DIR}/dng_update_meta.cpp)
-endif()
 
 add_library(dng_sdk STATIC ${LIB_CPP_FILES})
 
@@ -78,18 +79,11 @@ find_library(PTHREAD_LIBRARY pthread)
 find_library(DL_LIBRARY dl)
 
 target_link_libraries(
-    dng_sdk
-    zlibstatic
-    ${LIBRARIES}
+  dng_sdk
+  zlibstatic
+  ${LIBRARIES}  
+  ${XMP_LIBRARIES}
 )
-
-if(USE_XMP)
-  target_link_libraries(
-    dng_sdk 
-    ${XMP_CORE_TARGET}
-    ${XMP_FILES_TARGET}
-  )
-endif()
 
 # Setup DNG Validate binary
 #
@@ -101,11 +95,10 @@ target_link_libraries(
     ${LIBRARIES}
 )
 
-if(USE_XMP)
+if (NOT XMP_BUILD_STATIC)
   target_link_libraries(
-    dng_validate 
-    ${XMP_CORE_TARGET}
-    ${XMP_FILES_TARGET}
+    dng_validate
+    ${XMP_LIBRARIES}
   )
 endif()
 
@@ -136,11 +129,6 @@ target_include_directories(dng_sdk PRIVATE ${XMP_ROOT}/public/include/)
 #
 target_compile_definitions(dng_sdk PRIVATE -DqDNGXMPDocOps=0)
 
-if (NOT USE_XMP)
-  target_compile_definitions(dng_sdk PRIVATE -DqDNGUseXMP=0)
-  target_compile_definitions(dng_validate PRIVATE -DqDNGUseXMP=0)
-endif()
-
 # Enable compiling of the dng_validate binary for dng_validate
 # and setup the SDK to be built with the required methods needed to
 # build the dng_validate binary.
@@ -160,7 +148,4 @@ target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
 # Make sure all the libraries are built before we build the DNG SDK
 #
 add_dependencies(dng_sdk zlibstatic)
-
-if(USE_XMP)
-  add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
-endif()
+add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
