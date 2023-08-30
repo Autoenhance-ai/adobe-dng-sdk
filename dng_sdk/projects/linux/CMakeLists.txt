@@ -15,7 +15,7 @@ set(BUILD_DIR ../../build)
 # files
 #
 # In addition it's still possible to read and write XMP through the use of other tools
-# such as exiftool
+# such as exiftool if required.
 #
 set(USE_XMP Off)
 
@@ -46,10 +46,10 @@ endif()
 #
 add_subdirectory(${XMP_ROOT}/build/ ${BUILD_DIR}/xmp)
 
-# Zlib
+# zlib
 #
-# For whatever reason the zlib symbols don't end up in the XMP library so we have to
-# compile and link them into the DNG library ourselves.
+# We compile zlib separately as the DNG SDK uses it and we need to ensure it's
+# available even if we don't compile the XMP libraries.
 #
 add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
 
@@ -71,9 +71,15 @@ target_link_libraries(
     dng_sdk
     zlibstatic
     ${LIBRARIES}
+)
+
+if(USE_XMP)
+  target_link_libraries(
+    dng_sdk 
     ${XMP_CORE_TARGET}
     ${XMP_FILES_TARGET}
-)
+  )
+endif()
 
 # Setup DNG Validate binary
 #
@@ -83,9 +89,15 @@ target_link_libraries(
     dng_validate 
     dng_sdk
     ${LIBRARIES}
+)
+
+if(USE_XMP)
+  target_link_libraries(
+    dng_validate 
     ${XMP_CORE_TARGET}
     ${XMP_FILES_TARGET}
-)
+  )
+endif()
 
 # Create clean-all target to clean the build directory
 #
@@ -114,11 +126,10 @@ target_include_directories(dng_sdk PRIVATE ${XMP_ROOT}/public/include/)
 #
 target_compile_definitions(dng_sdk PRIVATE -DqDNGXMPDocOps=0)
 
-if (USE_XMP)
+if (NOT USE_XMP)
   target_compile_definitions(dng_sdk PRIVATE -DqDNGUseXMP=0)
   target_compile_definitions(dng_validate PRIVATE -DqDNGUseXMP=0)
 endif()
-
 
 # Enable compiling of the dng_validate binary for dng_validate
 # and setup the SDK to be built with the required methods needed to
@@ -127,8 +138,8 @@ endif()
 target_compile_definitions(dng_validate PRIVATE -DqDNGValidateTarget)
 target_compile_definitions(dng_sdk PRIVATE -DqDNGValidate)
 
-# Specify we want the internal Adobe methods to be compiled for XMP
-# which the DNG SDK uses.
+# Specify we want the internal Adobe methods to be compiled when
+# building XMP which the DNG SDK needs.
 #
 target_compile_definitions(dng_sdk PRIVATE -DAdobePrivate=1)
 target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
@@ -138,4 +149,8 @@ target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
 
 # Make sure all the libraries are built before we build the DNG SDK
 #
-add_dependencies(dng_sdk zlibstatic ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
+add_dependencies(dng_sdk zlibstatic)
+
+if(USE_XMP)
+  add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
+endif()
