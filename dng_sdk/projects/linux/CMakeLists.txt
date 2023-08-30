@@ -130,6 +130,12 @@ target_compile_definitions(dng_sdk PRIVATE -DUNIX_ENV=1)
 target_compile_definitions(dng_validate PRIVATE -DqLinux)
 target_compile_definitions(dng_validate PRIVATE -DUNIX_ENV=1)
 
+# We disable use of XMPFiles since we don't require this feature in order to build
+# and it just crashes on Linux, presumably due to some missing system support.
+#
+target_compile_definitions(dng_sdk PRIVATE -DqDNGXMPFiles=0)
+target_compile_definitions(dng_validate PRIVATE -DqDNGXMPFiles=0)
+
 # Specify where to find the headers
 #
 target_include_directories(dng_validate PRIVATE ${XMP_ROOT}/public/include/)
