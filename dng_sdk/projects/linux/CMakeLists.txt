@@ -9,6 +9,10 @@ project(dng)
 set(SRC_DIR ../../source)
 set(BUILD_DIR ../../build)
 
+message("==================================================================")
+message("dng")
+message("==================================================================")
+
 # Set if we want to build the DNG SDK with XMP Metadata support, by default this is
 # off because there are issues with the XMP libraries not building correctly due to 
 # missing symboles and for most use cases this is not required in order to decode DNG
@@ -17,10 +21,14 @@ set(BUILD_DIR ../../build)
 # In addition it's still possible to read and write XMP through the use of other tools
 # such as exiftool if required.
 #
-set(USE_XMP Off)
+set(USE_XMP OFF)
+message("USE_XMP: ${USE_XMP}")
 
 # XMP Toolkit
 #
+if (USE_XMP)
+  message("Building with XMP support")
+endif()
 
 # We need to build  libraries by default. Currently static libraries don't build
 # as cmake tries to link using the standard .a extension but the XMP script moves
@@ -60,6 +68,8 @@ file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 if(NOT USE_XMP)
   list(REMOVE_ITEM LIB_CPP_FILES ${SRC_DIR}/dng_update_meta.cpp)
 endif()
+
+message("LIB_CPP_FILES: ${LIB_CPP_FILES}")
 
 add_library(dng_sdk STATIC ${LIB_CPP_FILES})
 
