@@ -100,6 +100,7 @@ target_link_libraries(
 # Setup DNG Validate binary
 #
 add_executable(dng_validate ${SRC_DIR}/dng_validate.cpp)
+install(TARGETS dng_validate DESTINATION bin)
 
 target_link_libraries(
     dng_validate 
