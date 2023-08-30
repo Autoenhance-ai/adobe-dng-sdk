@@ -28,6 +28,8 @@ message("USE_XMP: ${USE_XMP}")
 #
 if (USE_XMP)
   message("Building with XMP support")
+else()
+  message("Building without XMP support")
 endif()
 
 # We need to build  libraries by default. Currently static libraries don't build
@@ -66,10 +68,8 @@ add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 
 if(NOT USE_XMP)
-  list(REMOVE_ITEM LIB_CPP_FILES ${SRC_DIR}/dng_update_meta.cpp)
+  list(FILTER LIB_CPP_FILES EXCLUDE REGEX ${SRC_DIR}/dng_update_meta.cpp)
 endif()
-
-message("LIB_CPP_FILES: ${LIB_CPP_FILES}")
 
 add_library(dng_sdk STATIC ${LIB_CPP_FILES})
 
