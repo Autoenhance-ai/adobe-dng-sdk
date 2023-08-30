@@ -9,10 +9,20 @@ project(dng)
 set(SRC_DIR ../../source)
 set(BUILD_DIR ../../build)
 
+# Set if we want to build the DNG SDK with XMP Metadata support, by default this is
+# off because there are issues with the XMP libraries not building correctly due to 
+# missing symboles and for most use cases this is not required in order to decode DNG
+# files
+#
+# In addition it's still possible to read and write XMP through the use of other tools
+# such as exiftool
+#
+set(USE_XMP Off)
+
 # XMP Toolkit
 #
 
-# We build dynamic libraries by default. Currently static libraries don't build
+# We need to build  libraries by default. Currently static libraries don't build
 # as cmake tries to link using the standard .a extension but the XMP script moves
 # them to an .ar extension which breaks the linking. 
 #
@@ -46,6 +56,11 @@ add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
 # Setup DNG SDK
 # 
 file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
+
+if(NOT USE_XMP)
+  list(REMOVE_ITEM LIB_CPP_FILES ${SRC_DIR}/dng_update_meta.cpp)
+endif()
+
 add_library(dng_sdk STATIC ${LIB_CPP_FILES})
 
 find_library(JPEG_LIBRARY jpeg)
@@ -98,6 +113,12 @@ target_include_directories(dng_sdk PRIVATE ${XMP_ROOT}/public/include/)
 # currently don't appear to build even with the AdobePrivate flag set.
 #
 target_compile_definitions(dng_sdk PRIVATE -DqDNGXMPDocOps=0)
+
+if (USE_XMP)
+  target_compile_definitions(dng_sdk PRIVATE -DqDNGUseXMP=0)
+  target_compile_definitions(dng_validate PRIVATE -DqDNGUseXMP=0)
+endif()
+
 
 # Enable compiling of the dng_validate binary for dng_validate
 # and setup the SDK to be built with the required methods needed to
