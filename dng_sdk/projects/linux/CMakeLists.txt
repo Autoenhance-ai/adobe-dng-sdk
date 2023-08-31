@@ -83,7 +83,7 @@ find_library(DL_LIBRARY dl)
 
 target_link_libraries(
   dng_sdk
-  zlibstatic
+  zlib
   ${LIBRARIES}  
   ${XMP_LIBRARIES}
 
@@ -105,6 +105,7 @@ install(TARGETS dng_validate DESTINATION bin)
 target_link_libraries(
     dng_validate 
     dng_sdk
+    zlib
     ${LIBRARIES}
 )
 
@@ -166,9 +167,9 @@ target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
 
 # Make sure all the libraries are built before we build the DNG SDK
 #
-add_dependencies(dng_sdk zlibstatic)
+add_dependencies(dng_sdk zlib)
 add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
 
-# Compile as PIC so the DNG SDK and zlibstatic can be linked into shared libraries
+# Compile as PIC so the DNG SDK can be linked into shared libraries
 #
 set_target_properties(dng_sdk PROPERTIES POSITION_INDEPENDENT_CODE ON)
