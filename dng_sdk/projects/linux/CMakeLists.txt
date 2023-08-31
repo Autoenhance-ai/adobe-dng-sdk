@@ -168,3 +168,7 @@ target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
 #
 add_dependencies(dng_sdk zlibstatic)
 add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
+
+# Compile as PIC so the DNG SDK can be linked into shared libraries
+#
+set_target_properties(dng_sdk PROPERTIES POSITION_INDEPENDENT_CODE ON)
