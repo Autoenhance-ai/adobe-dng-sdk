@@ -169,7 +169,7 @@ target_compile_definitions(dng_validate PRIVATE -DAdobePrivate=1)
 add_dependencies(dng_sdk zlibstatic)
 add_dependencies(dng_sdk ${XMP_CORE_TARGET} ${XMP_FILES_TARGET})
 
-# Export the SDK so other projects can use them
+# Export the SDK and dependencies so other projects can use them
 #
-export(TARGETS dng_sdk
+export(TARGETS dng_sdk zlibstatic
         NAMESPACE dng:: FILE cmake/${PROJECT_NAME}Targets.cmake)
