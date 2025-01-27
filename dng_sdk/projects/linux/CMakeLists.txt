@@ -5,9 +5,11 @@
 #
 cmake_minimum_required(VERSION 3.0)
 project(dng)
+include(ExternalProject)
 
 set(SRC_DIR ../../source)
 set(BUILD_DIR ../../build)
+set(XMP_ROOT /var/task/deps/adobe-xmp-toolkit)
 
 message("==================================================================")
 message("dng")
@@ -70,6 +72,15 @@ endif()
 # doesn't export xlib symbols so we can't use the one built by the XMP toolkit.
 #
 add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
+add_subdirectory(/var/task/deps/adobe-dng-sdk/libjxl/libjxl ${BUILD_DIR}/libjxl)
+# add_library(dng SHARED ${SRC_FILES})
+# libjxl
+# ExternalProject_Add(
+#     libjxl
+#     SOURCE_DIR /var/task/deps/adobe-dng-sdk/libjxl/libjxl
+#     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_TOOLS=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_MANPAGES=OFF -DJPEGXL_ENABLE_JPEGLI=OFF -DBROTLI_BUNDLED_MODE=ON -DHWY_ENABLE_INSTALL=OFF -DHWY_ENABLE_TESTS=OFF 
+# )
+# find_library(libjxl jxl)
 
 # Setup DNG SDK
 # 
@@ -84,6 +95,8 @@ find_library(DL_LIBRARY dl)
 target_link_libraries(
   dng_sdk
   zlib
+  jxl
+  jxl_threads
   ${LIBRARIES}  
   ${XMP_LIBRARIES}
 
@@ -109,12 +122,17 @@ target_link_libraries(
     ${LIBRARIES}
 )
 
+message("libraries: ${LIBRARIES}")
+
 if (NOT XMP_BUILD_STATIC)
   target_link_libraries(
     dng_validate
     ${XMP_LIBRARIES}
   )
 endif()
+
+# add_dependencies(dng_validate -l:libjxl.a)
+# target_link_libraries(dng_validate -l:libjxl.a)
 
 # Create clean-all target to clean the build directory
 #
