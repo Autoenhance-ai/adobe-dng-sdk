@@ -72,15 +72,6 @@ endif()
 # doesn't export xlib symbols so we can't use the one built by the XMP toolkit.
 #
 add_subdirectory(${XMP_ROOT}/third-party/zlib ${BUILD_DIR}/zlib)
-add_subdirectory(/var/task/deps/adobe-dng-sdk/libjxl/libjxl ${BUILD_DIR}/libjxl)
-# add_library(dng SHARED ${SRC_FILES})
-# libjxl
-# ExternalProject_Add(
-#     libjxl
-#     SOURCE_DIR /var/task/deps/adobe-dng-sdk/libjxl/libjxl
-#     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_TOOLS=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_MANPAGES=OFF -DJPEGXL_ENABLE_JPEGLI=OFF -DBROTLI_BUNDLED_MODE=ON -DHWY_ENABLE_INSTALL=OFF -DHWY_ENABLE_TESTS=OFF 
-# )
-# find_library(libjxl jxl)
 
 # Setup DNG SDK
 # 
@@ -89,6 +80,7 @@ file(GLOB LIB_CPP_FILES ${SRC_DIR}/*.cpp)
 add_library(dng_sdk STATIC ${LIB_CPP_FILES})
 
 find_library(JPEG_LIBRARY jpeg)
+find_library(JPEGXL_LIBRARY jxl)
 find_library(PTHREAD_LIBRARY pthread)
 find_library(DL_LIBRARY dl)
 
