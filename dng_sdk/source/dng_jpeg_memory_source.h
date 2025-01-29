@@ -3,7 +3,7 @@
 #ifndef __dng_jpeg_memory_source__
 #define __dng_jpeg_memory_source__
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 
 #include "dng_tag_types.h"
 #include "dng_jpeglib.h"

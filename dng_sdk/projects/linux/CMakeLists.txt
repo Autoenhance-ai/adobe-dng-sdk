@@ -87,6 +87,7 @@ find_library(DL_LIBRARY dl)
 target_link_libraries(
   dng_sdk
   zlib
+  jpeg
   jxl
   jxl_threads
   ${LIBRARIES}  
@@ -163,8 +164,12 @@ target_compile_definitions(dng_sdk PRIVATE -DqDNGXMPDocOps=0)
 # and setup the SDK to be built with the required methods needed to
 # build the dng_validate binary.
 #
-target_compile_definitions(dng_validate PRIVATE -DqDNGValidateTarget)
+target_compile_definitions(dng_validate PRIVATE -DqDNGValidateTarget=1)
 target_compile_definitions(dng_sdk PRIVATE -DqDNGValidate)
+
+# Build using LibJPEG as a JPEG decoder
+#
+target_compile_definitions(dng_validate PRIVATE -DqDNGUseLibJPEG=1)
 
 # Specify we want the internal Adobe methods to be compiled when
 # building XMP which the DNG SDK needs.

@@ -1,6 +1,6 @@
 #include "dng_jpeg_memory_source.h"
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 
 #include "dng_safe_arithmetic.h"
 

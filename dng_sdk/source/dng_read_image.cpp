@@ -31,7 +31,7 @@
 
 #include "zlib.h"
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 #include "dng_jpeg_memory_source.h"
 #include "dng_jpeglib.h"
 #endif
@@ -1365,7 +1365,7 @@ bool dng_read_image::ReadUncompressed (dng_host &host,
 
 /*****************************************************************************/
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 
 /*****************************************************************************/
 
@@ -1430,7 +1430,7 @@ void dng_read_image::DecodeLossyJPEG (dng_host &host,
 									  bool /* usingMultipleThreads */)
 	{
 	
-	#if qDNGUseLibJPEG
+	#if 1 //qDNGUseLibJPEG
 	
 	struct jpeg_decompress_struct cinfo;
 	

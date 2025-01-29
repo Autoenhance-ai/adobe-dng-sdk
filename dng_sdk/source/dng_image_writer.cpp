@@ -45,7 +45,7 @@
 
 #include "zlib.h"
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 #include "dng_jpeglib.h"
 #endif
 
@@ -4273,7 +4273,7 @@ void dng_lzw_compressor::Compress (const uint8 *sPtr,
 
 /*****************************************************************************/
 
-#if qDNGUseLibJPEG
+#if 1 //qDNGUseLibJPEG
 
 /*****************************************************************************/
 
@@ -4607,7 +4607,7 @@ void dng_image_writer::WriteData (dng_host &host,
 			
 			}
 			
-		#if qDNGUseLibJPEG
+		#if 1 //qDNGUseLibJPEG
 		
 		case ccLossyJPEG:
 			{
@@ -4852,7 +4852,7 @@ void dng_image_writer::EncodeJPEGPreview (dng_host &host,
 										  int32 quality)
 	{
 	
-	#if qDNGUseLibJPEG
+	#if 1 //qDNGUseLibJPEG
 		
 	dng_memory_stream stream (host.Allocator ());
 	

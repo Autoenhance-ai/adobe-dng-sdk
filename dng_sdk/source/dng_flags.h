@@ -337,7 +337,7 @@
 /// 1 if dng_validate command line tool is being built, 0 otherwise.
 
 #ifndef qDNGValidateTarget
-#define qDNGValidateTarget 0
+#define qDNGValidateTarget 1
 #endif
 
 /*****************************************************************************/
