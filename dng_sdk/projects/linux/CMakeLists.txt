@@ -21,7 +21,12 @@ message("XMP_ROOT: ${XMP_ROOT}")
 # outputs .ar files and we need to link to them when building the DNG SDK
 # since cmake defaults to trying to link to the .a files.
 #
-set(XMP_LIB_DIR ${XMP_ROOT}/public/libraries/i80386linux/release/)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(XMP_PLATFORM_FOLDER "i80386linux_x64")
+else()
+  set(XMP_PLATFORM_FOLDER "i80386linux")
+endif()
+set(XMP_LIB_DIR ${XMP_ROOT}/public/libraries/${XMP_PLATFORM_FOLDER}/release)
 message("XMP_LIB_DIR: ${XMP_LIB_DIR}")
 
 # We need to build the XMP Toolkit statically as the DNG SDK requires methods
